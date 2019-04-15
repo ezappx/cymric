@@ -1,0 +1,41 @@
+server:
+  port: 9001
+
+debug: false
+
+spring:
+  application:
+    name: ezappx-cymirc
+  datasource:
+    url: jdbc:postgresql://10.109.252.210:5432/ezappxdev
+    username: ezappxdev
+    password: ezappxdev
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database: postgresql
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+logging:
+  level:
+    root: INFO
+    com.ezappx: DEBUG
+
+ezappx:
+  mobile:
+    builder:
+      base-dir: /Users/ing/Projects/Ezappx/tmp
+      project-dir-name: ${ezappx.mobile.builder.base-dir}/UserProjects
+      package-name-prefix: com.ezappx
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka/
