@@ -1,10 +1,12 @@
 package com.ezappx.cymric.models;
 
 import com.ezappx.cymric.builders.MobileOSTypes;
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Data
 @Component
 public class UserMobileProject {
     public String username;

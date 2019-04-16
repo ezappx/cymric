@@ -1,4 +1,4 @@
-package com.ezappx.cymric.properties;
+package com.ezappx.cymric.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

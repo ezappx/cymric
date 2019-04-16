@@ -2,11 +2,10 @@ package com.ezappx.cymric.builders;
 
 
 import com.ezappx.cymric.models.UserMobileProject;
-import com.ezappx.cymric.properties.MobileBuilderProperties;
+import com.ezappx.cymric.config.MobileBuilderProperties;
 import com.ezappx.cymric.utils.Cordova;
 import com.ezappx.cymric.utils.ICordova;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,14 +20,15 @@ import java.nio.file.Paths;
  * --user2/
  * ...
  */
+@Slf4j
 public abstract class AbstractMobileBuilder implements IMobileBuilder {
-    private Logger log = LoggerFactory.getLogger(AbstractMobileBuilder.class);
     protected MobileBuilderProperties properties;
     protected UserMobileProject userMobileProject;
     protected String packageNamePrefix;
     protected Path userBuilderProjectPath;
     protected Path builderProjectPath;
     protected ICordova cordova;
+    protected IMobileBuilderResultSender mobileBuilderResultSender;
 
     /**
      * Init builder environment
@@ -96,6 +96,11 @@ public abstract class AbstractMobileBuilder implements IMobileBuilder {
 
     public IMobileBuilder setUserMobileProject(UserMobileProject userMobileProject) {
         this.userMobileProject = userMobileProject;
+        return this;
+    }
+
+    public IMobileBuilder setMobileBuilderResultSender(IMobileBuilderResultSender mobileBuilderResultSender) {
+        this.mobileBuilderResultSender = mobileBuilderResultSender;
         return this;
     }
 }

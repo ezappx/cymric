@@ -1,17 +1,15 @@
 package com.ezappx.cymric.builders;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 public class AndroidBuilder extends AbstractMobileBuilder {
 
     private static final String VERSION = "7.1.0"; // TODO Version should be set by Web IDE
     private static final String PLATFORM = "android";
-
-    private Logger log = LoggerFactory.getLogger(AndroidBuilder.class);
 
     private class AndroidBuilderTask {
         public String startBuild() {
@@ -19,15 +17,15 @@ public class AndroidBuilder extends AbstractMobileBuilder {
         }
 
         public void publishBuilderResult(String builderLog) {
-            // TODO publish to rabbit mq
-            log.debug("publish builder response");
-            MobileBuilderResponse response = new MobileBuilderResponse(
+
+            log.debug("publish builder result");
+            MobileBuilderResult result = new MobileBuilderResult(
                     "mobile-installer-uri",
                     builderLog,
                     LocalDateTime.now()
             );
 
-            log.debug("published : " + response);
+            mobileBuilderResultSender.send(result);
         }
     }
 
@@ -49,5 +47,4 @@ public class AndroidBuilder extends AbstractMobileBuilder {
         // Callback for builder
         builderFuture.thenAccept(builderTask::publishBuilderResult);
     }
-
 }

@@ -2,7 +2,7 @@ package com.ezappx.cymric.builders;
 
 
 import com.ezappx.cymric.models.UserMobileProject;
-import com.ezappx.cymric.properties.MobileBuilderProperties;
+import com.ezappx.cymric.config.MobileBuilderProperties;
 
 public interface IMobileBuilder {
     /**
@@ -13,5 +13,7 @@ public interface IMobileBuilder {
     IMobileBuilder setProperties(MobileBuilderProperties properties);
 
     IMobileBuilder setUserMobileProject(UserMobileProject userMobileProject);
+
+    IMobileBuilder setMobileBuilderResultSender(IMobileBuilderResultSender mobileBuilderResultSender);
 
 }
