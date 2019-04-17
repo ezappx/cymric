@@ -1,8 +1,8 @@
 package com.ezappx.cymric.builders;
 
 
-import com.ezappx.cymric.models.UserMobileProject;
 import com.ezappx.cymric.config.MobileBuilderProperties;
+import com.ezappx.cymric.models.UserMobileProject;
 
 public interface IMobileBuilder {
     /**

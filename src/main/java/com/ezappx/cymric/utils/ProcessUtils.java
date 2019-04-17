@@ -20,7 +20,7 @@ public class ProcessUtils {
     private Path inDir;
 
     public ProcessUtils(Path inDir) {
-        this.inDir =inDir;
+        this.inDir = inDir;
     }
 
     private void runAndRead(Process process) {
@@ -37,7 +37,7 @@ public class ProcessUtils {
     }
 
     public String exec(List<String> command) throws IOException, InterruptedException {
-        log.debug("exec {}", command);
+        log.debug("exec {} at {}", command, inDir);
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.directory(inDir.toFile());
         Process process = processBuilder.start();

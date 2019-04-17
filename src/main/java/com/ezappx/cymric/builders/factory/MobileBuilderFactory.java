@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class MobileBuilderFactory {
 
-    public <T extends IMobileBuilder> T getMobileBuilder(Class<?> builderClass) {
+    public IMobileBuilder getMobileBuilder(Class<?> builderClass) {
+
         IMobileBuilder mobileBuilder = null;
         try {
             mobileBuilder = (IMobileBuilder) Class.forName(builderClass.getName()).newInstance();
@@ -14,6 +15,6 @@ public class MobileBuilderFactory {
             e.printStackTrace();
         }
 
-        return (T) mobileBuilder;
+        return mobileBuilder;
     }
 }

@@ -14,6 +14,6 @@ public class MQSenderServiceTests {
 
     @Test
     public void sendMsgToMq() {
-        senderService.send("test msg");
+
     }
 }

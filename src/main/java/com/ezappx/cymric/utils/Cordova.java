@@ -1,52 +1,38 @@
 package com.ezappx.cymric.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Cordova implements ICordova {
-    private final Logger log = LoggerFactory.getLogger(Cordova.class);
     private static final String CORDOVA = "cordova";
 
-    private List<List<String>> commandsCache;
     private Path userBuilderProjectsPath;
+    private Path builderProjectsPath;
 
-    public Cordova(Path userBuilderProjectsPath) {
+    public Cordova(Path userBuilderProjectsPath, Path builderProjectsPath) {
         this.userBuilderProjectsPath = userBuilderProjectsPath;
-        commandsCache = new ArrayList<>();
+        this.builderProjectsPath = builderProjectsPath;
     }
 
     @Override
-    public void create(String dirName, String packageName, String projectName) {
-        commandsCache.add(Arrays.asList(CORDOVA, "create", dirName, packageName, projectName));
+    public void create(String dirName, String packageName, String projectName) throws IOException, InterruptedException {
+        new ProcessUtils(userBuilderProjectsPath).exec(Arrays.asList(CORDOVA, "create", dirName, packageName, projectName));
     }
 
     @Override
-    public void addPlatform(String mobilePlatform, String version) {
-        commandsCache.add(Arrays.asList(CORDOVA, "platform", "add",
-                mobilePlatform.toLowerCase() + "@" + version));
+    public void addPlatform(String mobilePlatform, String version) throws IOException, InterruptedException {
+        new ProcessUtils(builderProjectsPath).exec(Arrays.asList(CORDOVA, "platform", "add", mobilePlatform.toLowerCase() + "@" + version));
     }
 
     @Override
-    public void addPlugin(String pluginName) {
-        commandsCache.add(Arrays.asList(CORDOVA, "plugin", "add", pluginName));
+    public void addPlugin(String pluginName) throws IOException, InterruptedException {
+        new ProcessUtils(builderProjectsPath).exec(Arrays.asList(CORDOVA, "plugin", "add", pluginName));
     }
 
     @Override
-    public String build(String mobilePlatform) {
-        String buildLog = null;
-        ProcessUtils processUtils = new ProcessUtils(userBuilderProjectsPath);
-        for (List<String> command : commandsCache) {
-            try {
-                buildLog = processUtils.exec(command);
-            } catch (Exception e) {
-                log.error(e.toString());
-            }
-        }
-        return buildLog;
+    public String build(String mobilePlatform) throws IOException, InterruptedException {
+        return new ProcessUtils(builderProjectsPath).exec(Arrays.asList(CORDOVA, "build", mobilePlatform));
     }
+
 }
