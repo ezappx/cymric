@@ -25,18 +25,18 @@ public class AndroidBuilder extends AbstractMobileBuilder {
             return cordova.build(PLATFORM);
         } catch (Exception e) {
             log.error(e.toString());
-            return BUILD_FAILED;
+            return e.toString();
         }
     }
 
     @Override
     public void publishBuilderResult(String builderLog) {
-        log.debug("publish builder result");
         MobileBuilderResult result = new MobileBuilderResult(
                 "mobile-installer-uri", // TODO setup installer handler
                 builderLog,
                 LocalDateTime.now()
         );
+        log.debug("publish {}", result);
         mobileBuilderResultSender.send(result);
     }
 

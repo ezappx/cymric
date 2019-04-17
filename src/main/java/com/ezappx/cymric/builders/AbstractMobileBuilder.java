@@ -1,10 +1,9 @@
 package com.ezappx.cymric.builders;
 
 
+import com.ezappx.cymric.builders.utils.UserMobileProjectUtil;
 import com.ezappx.cymric.config.MobileBuilderProperties;
 import com.ezappx.cymric.models.UserMobileProject;
-import com.ezappx.cymric.utils.Cordova;
-import com.ezappx.cymric.utils.ICordova;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -24,7 +23,6 @@ import java.nio.file.Paths;
 public abstract class AbstractMobileBuilder implements IMobileBuilder {
     protected MobileBuilderProperties properties;
     protected UserMobileProject userMobileProject;
-    protected String packageNamePrefix;
     protected Path userDir;
     protected Path userProjectDir;
     protected ICordova cordova;
@@ -53,7 +51,6 @@ public abstract class AbstractMobileBuilder implements IMobileBuilder {
             throw new NullPointerException("UserMobileProject not set");
         }
 
-        packageNamePrefix = properties.getPackageNamePrefix();
         userDir = Paths.get(properties.getProjectDirName()).resolve(userMobileProject.username);
         userProjectDir = userDir.resolve(userMobileProject.projectName);
         cordova = new Cordova(userDir, userProjectDir);
@@ -62,7 +59,7 @@ public abstract class AbstractMobileBuilder implements IMobileBuilder {
     /**
      * Create local builder project for building
      */
-    protected void createBuilderProject() throws IOException, InterruptedException {
+    protected void createBuilderProject() throws IOException, InterruptedException, IllegalArgumentException {
         // create user builder projects
         if (!Files.exists(userDir)) {
             try {
@@ -72,12 +69,16 @@ public abstract class AbstractMobileBuilder implements IMobileBuilder {
             }
         }
 
+        if(!UserMobileProjectUtil.isValidPackageName(userMobileProject.packageName)) {
+            throw new IllegalArgumentException("Not valid packageName");
+        }
+
         // create builder projects
         if (!Files.exists(userProjectDir)) {
             log.info("init ezappx mobile builder project at {}", userProjectDir.toString());
             cordova.create(
                     userMobileProject.projectName,
-                    packageNamePrefix + userMobileProject.packageName,
+                    userMobileProject.packageName,
                     userMobileProject.projectName);
         }
     }
