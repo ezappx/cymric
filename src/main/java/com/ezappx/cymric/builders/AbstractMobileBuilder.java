@@ -51,8 +51,8 @@ public abstract class AbstractMobileBuilder implements IMobileBuilder {
             throw new NullPointerException("UserMobileProject not set");
         }
 
-        userDir = Paths.get(properties.getProjectDirName()).resolve(userMobileProject.username);
-        userProjectDir = userDir.resolve(userMobileProject.projectName);
+        userDir = Paths.get(properties.getProjectDirName()).resolve(userMobileProject.getUsername());
+        userProjectDir = userDir.resolve(userMobileProject.getProjectName());
         cordova = new Cordova(userDir, userProjectDir);
     }
 
@@ -69,7 +69,7 @@ public abstract class AbstractMobileBuilder implements IMobileBuilder {
             }
         }
 
-        if(!UserMobileProjectUtil.isValidPackageName(userMobileProject.packageName)) {
+        if(!UserMobileProjectUtil.isValidPackageName(userMobileProject.getPackageName())) {
             throw new IllegalArgumentException("Not valid packageName");
         }
 
@@ -77,9 +77,9 @@ public abstract class AbstractMobileBuilder implements IMobileBuilder {
         if (!Files.exists(userProjectDir)) {
             log.info("init ezappx mobile builder project at {}", userProjectDir.toString());
             cordova.create(
-                    userMobileProject.projectName,
-                    userMobileProject.packageName,
-                    userMobileProject.projectName);
+                    userMobileProject.getProjectName(),
+                    userMobileProject.getPackageName(),
+                    userMobileProject.getProjectName());
         }
     }
 
@@ -87,7 +87,7 @@ public abstract class AbstractMobileBuilder implements IMobileBuilder {
      * Add cordova plugin that is stored in userMobileProject
      */
     protected void addMobileNativePlugin() throws IOException, InterruptedException {
-        for (String plugin : userMobileProject.cordovaPlugins) {
+        for (String plugin : userMobileProject.getCordovaPlugins()) {
             cordova.addPlugin(plugin);
         }
     }

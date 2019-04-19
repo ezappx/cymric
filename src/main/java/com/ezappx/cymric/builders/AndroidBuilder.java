@@ -1,5 +1,6 @@
 package com.ezappx.cymric.builders;
 
+import com.ezappx.common.MobileBuilderResult;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -11,7 +12,6 @@ public class AndroidBuilder extends AbstractMobileBuilder {
 
     private static final String VERSION = "7.1.0"; // TODO Version should be set by Web IDE
     private static final String PLATFORM = "android";
-    private static final String BUILD_FAILED = "build failed";
 
     @Override
     protected void addMobilePlatform() throws IOException, InterruptedException {

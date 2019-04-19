@@ -1,21 +1,36 @@
 package com.ezappx.cymric.models;
 
-import com.ezappx.cymric.builders.MobileOSTypes;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.*;
 import java.util.List;
 
 @Data
 @Component
+@Entity
+@Table(name = "UserMobileProjects")
 public class UserMobileProject {
-    public String username;
-    public String projectName;
-    public String packageName;
-    public String createdAt;
-    public String updatedAt;
-    public MobileOSTypes mobileOS;
-    public List<String> binaryFiles;
-    public List<String> cordovaPlugins;
-    public String id;
+
+    @Id
+    @GeneratedValue
+    private String id;
+
+    private String username;
+
+    private String projectName;
+
+    private String packageName;
+
+    private String createdAt;
+
+    private String updatedAt;
+
+    private String mobileOS;
+
+    @ElementCollection
+    private List<String> binaryFiles;
+
+    @ElementCollection
+    private List<String> cordovaPlugins;
 }
