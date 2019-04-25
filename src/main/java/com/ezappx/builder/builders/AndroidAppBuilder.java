@@ -37,7 +37,7 @@ public class AndroidAppBuilder extends AbstractMobileAppBuilder {
         result.setBuiltTime(LocalDateTime.now().toString());
         result.setBuilderLog(builderLog);
         try {
-            String installer = builderLog.substring((builderLog.lastIndexOf("\n"))).trim();
+            String installer = builderLog.substring((builderLog.lastIndexOf(System.lineSeparator()))).trim();
             boolean builderSuccess = Paths.get(installer).toFile().exists();
             if (!builderSuccess)  // 未成功生成安装包文件
                 log.error("no installer: {}", installer);

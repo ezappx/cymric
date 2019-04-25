@@ -19,6 +19,8 @@ public class ProcessUtils {
 
     private Path inDir;
 
+    private static final String newLineSeparator = System.lineSeparator();
+
     public ProcessUtils(Path inDir) {
         this.inDir = inDir;
     }
@@ -30,6 +32,7 @@ public class ProcessUtils {
             for (output = reader.readLine(); output != null; output = reader.readLine()) {
                 log.debug(output);
                 processOutput.append(output);
+                processOutput.append(newLineSeparator);
             }
         } catch (IOException e) {
             log.error(e.toString());
