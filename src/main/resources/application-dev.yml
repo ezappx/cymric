@@ -43,7 +43,11 @@ ezappx:
     builder:
       base-dir: ${HOME}/Projects/Ezappx/tmp
       project-dir-name: ${ezappx.mobile.builder.base-dir}/UserProjects
-      package-name-prefix: com.ezappx
+  rabbitmq:
+    result-route: "result-route"
+    result-mq: "mobile.builder.result.mq"
+    result-ex: "mobile.builder.result.ex"
+
 
 eureka:
   client:
