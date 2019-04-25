@@ -31,8 +31,8 @@ public class ProcessUtils {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             for (output = reader.readLine(); output != null; output = reader.readLine()) {
                 log.debug(output);
-                processOutput.append(output);
                 processOutput.append(newLineSeparator);
+                processOutput.append(output);
             }
         } catch (IOException e) {
             log.error(e.toString());

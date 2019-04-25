@@ -46,8 +46,6 @@ public class AndroidAppBuilder extends AbstractMobileAppBuilder {
         } catch (Exception e) {
             log.error(e.toString());
         }
-
-        log.debug("publish {}", result);
         mobileBuilderResultSender.send(result);
     }
 
