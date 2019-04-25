@@ -4,12 +4,16 @@ package com.ezappx.builder.builders;
 import com.ezappx.builder.builders.utils.BuilderValidationUtil;
 import com.ezappx.builder.config.MobileBuilderProperties;
 import com.ezappx.builder.models.UserMobileProject;
+import com.ezappx.builder.utils.MobileBuilderResult;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * project/
@@ -21,32 +25,55 @@ import java.nio.file.Paths;
  */
 @Slf4j
 public abstract class AbstractMobileAppBuilder implements IMobileBuilder {
-    protected MobileBuilderProperties properties;
-    protected UserMobileProject userMobileProject;
-    protected Path userDir;
-    protected Path userProjectDir;
-    protected ICordova cordova;
-    protected IMobileBuilderResultSender mobileBuilderResultSender;
+    private MobileBuilderProperties properties;
+    private UserMobileProject userMobileProject;
+    private Path userDir;
+    private Path userProjectDir;
+    private Consumer<MobileBuilderResult> sendMobileBuilderResult;
+    private IResourceGenerator generator;
 
+    private ICordova cordova;
+    String PLATFORM;
+    String VERSION;
+
+    @Override
     public IMobileBuilder setProperties(MobileBuilderProperties properties) {
         this.properties = properties;
         return this;
     }
 
+    @Override
     public IMobileBuilder setUserMobileProject(UserMobileProject userMobileProject) {
         this.userMobileProject = userMobileProject;
         return this;
     }
 
-    public IMobileBuilder setMobileBuilderResultSender(IMobileBuilderResultSender mobileBuilderResultSender) {
-        this.mobileBuilderResultSender = mobileBuilderResultSender;
+    @Override
+    public IMobileBuilder setMobileBuilderResultSender(Consumer<MobileBuilderResult> mobileBuilderResultSender) {
+        this.sendMobileBuilderResult = mobileBuilderResultSender;
         return this;
     }
+
+    @Override
+    public IMobileBuilder setResourceGenerator(IResourceGenerator generator) {
+        this.generator = generator;
+        return this;
+    }
+
+    @Override
+    public void build() {
+        // Start new thread to run builder
+        CompletableFuture<MobileBuilderResult> builderFuture = CompletableFuture.supplyAsync(this::startBuildTask);
+
+        // Callback for builder
+        builderFuture.thenAccept(this.sendMobileBuilderResult);
+    }
+
 
     /**
      * Init builder environment
      */
-    protected void initBuilderEnv() {
+    private void initBuilderEnv() {
         if (userMobileProject == null) {
             throw new NullPointerException("UserMobileProject not set");
         }
@@ -59,7 +86,7 @@ public abstract class AbstractMobileAppBuilder implements IMobileBuilder {
     /**
      * Create local builder project for building
      */
-    protected void createBuilderProject() throws IOException, InterruptedException, IllegalArgumentException {
+    private void createBuilderProject() throws IOException, InterruptedException, IllegalArgumentException {
         // create user builder projects
         if (!Files.exists(userDir)) {
             try {
@@ -69,7 +96,7 @@ public abstract class AbstractMobileAppBuilder implements IMobileBuilder {
             }
         }
 
-        if(!BuilderValidationUtil.isValidPackageName(userMobileProject.getPackageName())) {
+        if (!BuilderValidationUtil.isValidPackageName(userMobileProject.getPackageName())) {
             throw new IllegalArgumentException("Not valid packageName");
         }
 
@@ -86,7 +113,7 @@ public abstract class AbstractMobileAppBuilder implements IMobileBuilder {
     /**
      * Add cordova plugin that is stored in userMobileProject
      */
-    protected void addMobileNativePlugin() throws IOException, InterruptedException {
+    private void addMobileNativePlugin() throws IOException, InterruptedException {
         for (String plugin : userMobileProject.getCordovaPlugins()) {
             cordova.addPlugin(plugin);
         }
@@ -95,16 +122,35 @@ public abstract class AbstractMobileAppBuilder implements IMobileBuilder {
     /**
      * Add specified mobile platform
      */
-    abstract protected void addMobilePlatform() throws IOException, InterruptedException;
-
-    protected void preStartBuildTask() throws IOException, InterruptedException {
-        initBuilderEnv();
-        createBuilderProject();
-        addMobilePlatform();
-        addMobileNativePlugin();
+    protected void addMobilePlatform() throws IOException, InterruptedException {
+        cordova.addPlatform(PLATFORM, VERSION);
     }
 
-    abstract protected String startBuildTask() throws IOException, InterruptedException;
+    MobileBuilderResult startBuildTask() {
+        MobileBuilderResult result = new MobileBuilderResult();
+        result.setBuiltTime(LocalDateTime.now().toString());
 
-    abstract public void publishBuilderResult(String builderLog);
+        try {
+            initBuilderEnv();
+            createBuilderProject();
+            addMobilePlatform();
+            addMobileNativePlugin();
+            generator.generate(userMobileProject, userProjectDir.resolve("www"));
+            String builderLog = cordova.build(PLATFORM);
+            result.setBuilderLog(builderLog);
+
+            // 解析安装包文件路径
+            String installer = builderLog.substring((builderLog.lastIndexOf(System.lineSeparator()))).trim();
+            boolean builderSuccess = Paths.get(installer).toFile().exists();
+            if (!builderSuccess)  // 未成功生成安装包文件
+                log.error("no installer: {}", installer);
+            else
+                result.setMobileInstaller(installer);
+
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
+
+        return result;
+    }
 }

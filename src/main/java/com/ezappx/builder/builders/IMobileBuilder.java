@@ -3,6 +3,9 @@ package com.ezappx.builder.builders;
 
 import com.ezappx.builder.config.MobileBuilderProperties;
 import com.ezappx.builder.models.UserMobileProject;
+import com.ezappx.builder.utils.MobileBuilderResult;
+
+import java.util.function.Consumer;
 
 public interface IMobileBuilder {
     /**
@@ -10,10 +13,12 @@ public interface IMobileBuilder {
      */
     void build();
 
+    IMobileBuilder setResourceGenerator(IResourceGenerator generator);
+
     IMobileBuilder setProperties(MobileBuilderProperties properties);
 
     IMobileBuilder setUserMobileProject(UserMobileProject userMobileProject);
 
-    IMobileBuilder setMobileBuilderResultSender(IMobileBuilderResultSender mobileBuilderResultSender);
+    IMobileBuilder setMobileBuilderResultSender(Consumer<MobileBuilderResult> mobileBuilderResultSender);
 
 }
